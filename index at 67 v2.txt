@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>סימולטור אקטוארי - מודל תשואה ריאלית נטו</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 850px;
+            background: white;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+        .slider-group {
+            margin-bottom: 20px;
+            background: #f9fbfb;
+            padding: 15px;
+            border-radius: 8px;
+            border-right: 5px solid #3498db;
+        }
+        .section-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        input[type=range] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .current-value {
+            font-size: 1.2em;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .results-container {
+            margin-top: 35px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        .card-0 { background-color: #95a5a6; }
+        .card-60 { background-color: #2980b9; }
+        .card-100 { background-color: #27ae60; }
+        
+        .card h3 { margin-top: 0; font-size: 1.2em; }
+        .card .amount { font-size: 1.5em; margin: 15px 0; letter-spacing: -0.5px; }
+        .card .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        .winner {
+            border: 4px solid #f1c40f;
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .info-text {
+            font-size: 0.9em;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        .summary-banner {
+            background-color: #e8f4fd;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .footer-note {
+            margin-top: 35px;
+            padding: 15px;
+            background-color: #fff9db;
+            border-right: 5px solid #f1c40f;
+            border-radius: 6px;
+            font-size: 0.95em;
+            color: #5c4300;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>מחשבון פרישה אקטוארי - מודל תשואה ריאלית</h1>
+    <h2>סימולציית הון מצטבר על בסיס צבירה, מקדמים משתנים ותשואות שוק בניכוי אינפלציה</h2>
+
+    <div class="summary-banner" id="summaryBanner">
+        מחשב נתונים...
+    </div>
+
+    <div class="section-title">1. נתוני הון ותשואות מסלול</div>
+
+    <div class="slider-group" style="border-right-color: #2ecc71;">
+        <label>סכום הצבירה המוכנס לקצבה (במועד הפרישה): <span id="czviraVal" class="current-value">1,557,740</span> ₪</label>
+        <input type="range" id="czvira" min="0" max="10000000" step="10000" value="1557740" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #1abc9c;">
+        <label>תשואה שנתית חזויה תוך כדי פנסיה (הראל מסלול בסיסי): <span id="returnRateVal" class="current-value">6.0</span>%</label>
+        <input type="range" id="returnRate" min="0.0" max="12.0" step="0.1" value="6.0" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #9b59b6;">
+        <label>הנחת אינפלציה שנתית ממוצעת: <span id="inflationVal" class="current-value">2.5</span>%</label>
+        <input type="range" id="inflation" min="0" max="5" step="0.1" value="2.5" oninput="calculate()">
+    </div>
+
+    <div class="section-title">2. הגדרת מקדמי המרת קצבה משתנים</div>
+
+    <div class="slider-group" style="border-right-color: #95a5a6;">
+        <label>מקדם המרה לאופציה א' (0% שאירים לאישה): <span id="mekademAVal" class="current-value">157.63</span></label>
+        <input type="range" id="mekademA" min="100" max="300" step="0.01" value="157.63" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #2980b9;">
+        <label>מקדם המרה לאופציה ב' (60% שאירים לאישה): <span id="mekademBVal" class="current-value">178.34</span></label>
+        <input type="range" id="mekademB" min="100" max="300" step="0.01" value="178.34" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #27ae60;">
+        <label>מקדם המרה לאופציה ג' (100% שאירים לאישה): <span id="mekademCVal" class="current-value">200.87</span></label>
+        <input type="range" id="mekademC" min="100" max="300" step="0.01" value="200.87" oninput="calculate()">
+    </div>
+
+    <div class="section-title">3. נתונים דמוגרפיים ותוחלות חיים</div>
+
+    <div class="slider-group" style="border-right-color: #34495e;">
+        <label>שנת הלידה של הגבר: <span id="yearManVal" class="current-value">1963</span></label>
+        <input type="range" id="yearMan" min="1950" max="2025" value="1963" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #e67e22;">
+        <label>שנת הלידה של האישה: <span id="yearWomanVal" class="current-value">1965</span></label>
+        <input type="range" id="yearWoman" min="1950" max="2025" value="1965" oninput="calculate()">
+    </div>
+
+    <div class="slider-group">
+        <label>תוחלת חיי הגבר (גיל פטירה חזוי): <span id="ageManVal" class="current-value">82</span></label>
+        <input type="range" id="ageMan" min="67" max="100" value="82" oninput="calculate()">
+    </div>
+
+    <div class="slider-group" style="border-right-color: #27ae60;">
+        <label>תוחלת חיי האישה (גיל פטירה חזוי): <span id="ageWomanVal" class="current-value">89</span></label>
+        <input type="range" id="ageWoman" min="67" max="100" value="89" oninput="calculate()">
+    </div>
+
+    <div class="results-container">
+        <div class="card card-0" id="cardA">
+            <h3>אופציה א' (0%)</h3>
+            <div class="badge" id="badgeA">מקדם 157.63</div>
+            <div class="amount" id="sumA">0 ₪</div>
+            <div class="info-text" id="infoA">קצבה בסיס: 0 ₪</div>
+        </div>
+        
+        <div class="card card-60" id="cardB">
+            <h3>אופציה ב' (60%)</h3>
+            <div class="badge" id="badgeB">מקדם 178.34</div>
+            <div class="amount" id="sumB">0 ₪</div>
+            <div class="info-text" id="infoB">קצבה בסיס: 0 ₪</div>
+        </div>
+        
+        <div class="card card-100" id="cardC
