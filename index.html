@@ -2,334 +2,349 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>סימולטור אקטוארי אוניברסלי - דגם גנרי מלא</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון פנסיה מהוון - גרסה מעודכנת</title>
     <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --border: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
+
         .container {
+            width: 100%;
             max-width: 850px;
-            background: white;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
+
         h1 {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.6rem;
         }
-        h2 {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 1.1em;
-            margin-bottom: 30px;
-            font-weight: normal;
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
-        .slider-group {
-            margin-bottom: 20px;
-            background: #f9fbfb;
-            padding: 15px;
-            border-radius: 8px;
-            border-right: 5px solid #3498db;
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .section-title {
-            font-size: 1.2em;
-            color: #2c3e50;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 5px;
-            font-weight: bold;
+
+        .label-wrapper {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 1.1em;
+
+        .value-tag {
+            color: var(--primary);
+            background: #f0f9ff;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-variant-numeric: tabular-nums;
+            border: 1px solid #bae6fd;
+            font-size: 0.9rem;
         }
-        input[type=range] {
+
+        input[type="range"] {
+            -webkit-appearance: none;
             width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            outline: none;
             margin: 10px 0;
         }
-        .current-value {
-            font-size: 1.2em;
-            color: #e74c3c;
-            font-weight: bold;
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-hover);
+        }
+
         .results-container {
-            margin-top: 35px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-        }
-        .card {
+            margin-top: 30px;
             padding: 20px;
-            border-radius: 10px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .results-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 15px;
             text-align: center;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
         }
-        .card-0 { background-color: #95a5a6; }
-        .card-60 { background-color: #2980b9; }
-        .card-100 { background-color: #27ae60; }
-        
-        .card h3 { margin-top: 0; font-size: 1.2em; }
-        .card .amount { font-size: 1.5em; margin: 15px 0; letter-spacing: -0.5px; }
-        .card .badge {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 10px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 0.85em;
-            margin-bottom: 10px;
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            text-align: center;
         }
-        .winner {
-            border: 4px solid #f1c40f;
-            transform: scale(1.03);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .info-text {
-            font-size: 0.9em;
-            opacity: 0.9;
-            font-weight: normal;
-        }
-        .summary-banner {
-            background-color: #e8f4fd;
+
+        .result-card {
+            background: var(--card-bg);
             padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
-        .footer-note {
-            margin-top: 35px;
-            padding: 15px;
-            background-color: #fff9db;
-            border-right: 5px solid #f1c40f;
-            border-radius: 6px;
-            font-size: 0.95em;
-            color: #5c4300;
-            line-height: 1.5;
+
+        .result-card.highlight-card {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .highlight-card .result-value {
+            font-size: 1.6rem;
+            color: #16a34a;
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        /* התאמה למובייל */
+        @media (max-width: 480px) {
+            body { padding: 8px; }
+            .container { padding: 15px; border-radius: 12px; }
+            h1 { font-size: 1.35rem; }
+            .results-grid { grid-template-columns: 1fr 1fr; }
+            .result-card.highlight-card { grid-column: span 2; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>מחשבון פרישה אקטוארי אוניברסלי - דגם גנרי מלא</h1>
-    <h2>סימולציית הון ריאלי מצטבר על בסיס צבירה, מקדמים משתנים ותוחלות חיים</h2>
+    <h1>מחשבון פנסיה מהוון להיום (גרסה מעודכנת)</h1>
+    
+    <div class="grid">
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="currentSavings">כסף שנחסך עד כה:</label>
+                <span class="value-tag" id="currentSavingsVal">0 ₪</span>
+            </div>
+            <input type="range" id="currentSavings" min="0" max="5000000" step="10000" value="500000">
+        </div>
 
-    <div class="summary-banner" id="summaryBanner">
-        מחשב נתונים אקטואריים...
-    </div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="currentAge">גיל נוכחי:</label>
+                <span class="value-tag" id="currentAgeVal">40</span>
+            </div>
+            <input type="range" id="currentAge" min="18" max="79" step="1" value="40">
+        </div>
 
-    <div class="section-title">1. נתוני הון ופוליסה</div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="retirementAge">גיל קבלת הפנסיה:</label>
+                <span class="value-tag" id="retirementAgeVal">67</span>
+            </div>
+            <input type="range" id="retirementAge" min="60" max="80" step="1" value="67">
+        </div>
 
-    <div class="slider-group" style="border-right-color: #2ecc71;">
-        <label>סכום הצבירה המוכנס לקצבה (במועד הפרישה): <span id="czviraVal" class="current-value">1,557,740</span> ₪</label>
-        <input type="range" id="czvira" min="0" max="10000000" step="10000" value="1557740" oninput="calculate()">
-    </div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="yearsToWork">שנות עבודה והפקדה מהיום:</label>
+                <span class="value-tag" id="yearsToWorkVal">20</span>
+            </div>
+            <input type="range" id="yearsToWork" min="0" max="60" step="1" value="20">
+        </div>
 
-    <div class="slider-group" style="border-right-color: #f1c40f;">
-        <label>שיעור ריבית הקיזום (היוון תעריפי): <span id="kizumVal" class="current-value">2.5</span>%</label>
-        <input type="range" id="kizum" min="1.0" max="4.0" step="0.1" value="2.5" oninput="calculate()">
-    </div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="averageSalary">ממוצע שכר בתקופת העבודה (ברוטו):</label>
+                <span class="value-tag" id="averageSalaryVal">0 ₪</span>
+            </div>
+            <input type="range" id="averageSalary" min="5000" max="100000" step="1000" value="25000">
+        </div>
 
-    <div class="section-title">2. הגדרת מקדמי המרת קצבה משתנים</div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="conversionFactor">מקדם חלוקה לפנסיה:</label>
+                <span class="value-tag" id="conversionFactorVal">220</span>
+            </div>
+            <input type="range" id="conversionFactor" min="140" max="300" step="1" value="220">
+        </div>
 
-    <div class="slider-group" style="border-right-color: #95a5a6;">
-        <label>מקדם המרה לאופציה א' (0% שאירים לאישה): <span id="mekademAVal" class="current-value">157.63</span></label>
-        <input type="range" id="mekademA" min="100" max="300" step="0.01" value="157.63" oninput="calculate()">
-    </div>
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="annualReturn">הנחת תשואה שנתית ממוצעת:</label>
+                <span class="value-tag" id="annualReturnVal">10%</span>
+            </div>
+            <input type="range" id="annualReturn" min="3" max="20" step="0.5" value="10">
+        </div>
 
-    <div class="slider-group" style="border-right-color: #2980b9;">
-        <label>מקדם המרה לאופציה ב' (60% שאירים לאישה): <span id="mekademBVal" class="current-value">178.34</span></label>
-        <input type="range" id="mekademB" min="100" max="300" step="0.01" value="178.34" oninput="calculate()">
-    </div>
-
-    <div class="slider-group" style="border-right-color: #27ae60;">
-        <label>מקדם המרה לאופציה ג' (100% שאירים לאישה): <span id="mekademCVal" class="current-value">200.87</span></label>
-        <input type="range" id="mekademC" min="100" max="300" step="0.01" value="200.87" oninput="calculate()">
-    </div>
-
-    <div class="section-title">3. נתונים דמוגרפיים ותוחלות חיים</div>
-
-    <div class="slider-group" style="border-right-color: #34495e;">
-        <label>שנת הלידה של הגבר: <span id="yearManVal" class="current-value">1963</span></label>
-        <input type="range" id="yearMan" min="1950" max="2025" value="1963" oninput="calculate()">
-    </div>
-
-    <div class="slider-group" style="border-right-color: #e67e22;">
-        <label>שנת הלידה של האישה: <span id="yearWomanVal" class="current-value">1963</span></label>
-        <input type="range" id="yearWoman" min="1950" max="2025" value="1963" oninput="calculate()">
-    </div>
-
-    <div class="slider-group">
-        <label>תוחלת חיי הגבר (גיל פטירה חזוי): <span id="ageManVal" class="current-value">82</span></label>
-        <input type="range" id="ageMan" min="67" max="100" value="82" oninput="calculate()">
-    </div>
-
-    <div class="slider-group" style="border-right-color: #27ae60;">
-        <label>תוחלת חיי האישה (גיל פטירה חזוי): <span id="ageWomanVal" class="current-value">89</span></label>
-        <input type="range" id="ageWoman" min="67" max="100" value="89" oninput="calculate()">
-    </div>
-
-    <div class="slider-group" style="border-right-color: #9b59b6;">
-        <label>הנחת אינפלציה שנתית ממוצעת: <span id="inflationVal" class="current-value">2.0</span>%</label>
-        <input type="range" id="inflation" min="0" max="5" step="0.1" value="2.0" oninput="calculate()">
+        <div class="input-group">
+            <div class="label-wrapper">
+                <label for="inflation">הנחת אינפלציה שנתית ממוצעת:</label>
+                <span class="value-tag" id="inflationVal">2.5%</span>
+            </div>
+            <input type="range" id="inflation" min="0" max="10" step="0.1" value="2.5">
+        </div>
     </div>
 
     <div class="results-container">
-        <div class="card card-0" id="cardA">
-            <h3>אופציה א' (0%)</h3>
-            <div class="badge" id="badgeA">מקדם 157.63</div>
-            <div class="amount" id="sumA">0 ₪</div>
-            <div class="info-text" id="infoA">קצבה בסיס: 0 ₪</div>
+        <div class="results-title">תחזית פרישה בערכים מהוונים (כוח קנייה של היום)</div>
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="result-label">תשואה ריאלית שנתית</div>
+                <div class="result-value" id="realReturnResult">0.00%</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">סך צבירה מהוונת בפרישה</div>
+                <div class="result-value" id="totalCapitalResult">0 ₪</div>
+            </div>
+            <div class="result-card highlight-card">
+                <div class="result-label">פנסיה חודשית ברוטו</div>
+                <div class="result-value" id="monthlyPensionResult">0 ₪</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">פנסיה שנתית ברוטו</div>
+                <div class="result-value" id="annualPensionResult">0 ₪</div>
+            </div>
         </div>
-        
-        <div class="card card-60" id="cardB">
-            <h3>אופציה ב' (60%)</h3>
-            <div class="badge" id="badgeB">מקדם 178.34</div>
-            <div class="amount" id="sumB">0 ₪</div>
-            <div class="info-text" id="infoB">קצבה בסיס: 0 ₪</div>
+        <div class="note">
+            * החישוב מבוסס על הפרש מהוון מדויק (נוסחת פישר לריבית ריאלית) בין התשואה לאנפלציה.<br>
+            * אחוז ההפקדה מוגדר לפי החוק בישראל: 20.83% (6% עובד, 6.5% מעביד, 8.33% פיצויים).<br>
+            * המודל עצמאי: בשנים שמעבר ל'שנות העבודה', ההפקדות ייעצרו אך ההון הקיים ימשיך לצבור ריבית דריבית ריאלית עד לגיל קבלת הפנסיה.
         </div>
-        
-        <div class="card card-100" id="cardC">
-            <h3>אופציה ג' (100%)</h3>
-            <div class="badge" id="badgeC">מקדם 200.87</div>
-            <div class="amount" id="sumC">0 ₪</div>
-            <div class="info-text" id="infoC">קצבה בסיס: 0 ₪</div>
-        </div>
-    </div>
-
-    <div class="footer-note">
-        <strong>הערה אקטוארית לגבי סימטריות המודל:</strong> המחשבון מתוכנן בצורה שוויונית וגנרית לחלוטין ואינו מפריד בין זכויות גבר לאישה. השימוש במונחים "גבר" ו"אישה" בסרגלים נעשה מטעמי נוחות תצוגה בלבד על מנת להבדיל בין שני בני הזוג. ניתן לבצע <strong>היפוך מצב מלא</strong>: במידה והאישה היא בעלת הפוליסה העיקרית, יש להזין את נתוניה בסרגלי "הגבר" (הגדרת המקדם הבסיסי ומקדם השאירים לבן הזוג בהתאמה), והמודל יחשב את התוצאות באותה רמת דיוק עבור בן הזוג הנותר.
     </div>
 </div>
 
 <script>
-function calculate() {
-    // שליפת הנתונים מהסרגלים
-    var totalCzviraNominalAt67 = parseInt(document.getElementById("czvira").value);
-    var kizumRate = parseFloat(document.getElementById("kizum").value) / 100;
-    
-    var mekademA = parseFloat(document.getElementById("mekademA").value);
-    var mekademB = parseFloat(document.getElementById("mekademB").value);
-    var mekademC = parseFloat(document.getElementById("mekademC").value);
-    
-    var birthYearMan = parseInt(document.getElementById("yearMan").value);
-    var birthYearWoman = parseInt(document.getElementById("yearWoman").value);
-    var manDeathAge = parseInt(document.getElementById("ageMan").value);
-    var womanDeathAge = parseInt(document.getElementById("ageWoman").value);
-    var infRate = parseFloat(document.getElementById("inflation").value) / 100;
-    
-    var ageGap = birthYearWoman - birthYearMan;
-    
-    // עדכון הטקסטים במסך
-    document.getElementById("czviraVal").innerText = totalCzviraNominalAt67.toLocaleString();
-    document.getElementById("kizumVal").innerText = (kizumRate * 100).toFixed(1);
-    document.getElementById("mekademAVal").innerText = mekademA.toFixed(2);
-    document.getElementById("mekademBVal").innerText = mekademB.toFixed(2);
-    document.getElementById("mekademCVal").innerText = mekademC.toFixed(2);
-    document.getElementById("yearManVal").innerText = birthYearMan;
-    document.getElementById("yearWomanVal").innerText = birthYearWoman;
-    document.getElementById("ageManVal").innerText = manDeathAge;
-    document.getElementById("ageWomanVal").innerText = womanDeathAge;
-    document.getElementById("inflationVal").innerText = (infRate * 100).toFixed(1);
-    
-    // עדכון תגיות המקדמים על הכרטיסיות
-    document.getElementById("badgeA").innerText = "מקדם " + mekademA.toFixed(2);
-    document.getElementById("badgeB").innerText = "מקדם " + mekademB.toFixed(2);
-    document.getElementById("badgeC").innerText = "מקדם " + mekademC.toFixed(2);
-    
-    // ניתוח שנות הבדידות אקטוארית
-    var calendarYearManDies = birthYearMan + manDeathAge;
-    var womanAgeAtManDeath = calendarYearManDies - birthYearWoman;
-    
-    var yearsWomanLivesAlone = 0;
-    if (womanDeathAge > womanAgeAtManDeath) {
-        yearsWomanLivesAlone = womanDeathAge - womanAgeAtManDeath;
+    function formatMoney(num) {
+        return new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', maximumFractionDigits: 0 }).format(num);
     }
-    
-    var gapText = ageGap === 0 ? "בני אותו גיל" : (ageGap > 0 ? "הגבר מבוגר מהאישה ב-" + ageGap + " שנים" : "האישה מבוגרת מהגבר ב-" + Math.abs(ageGap) + " שנים");
-    document.getElementById("summaryBanner").innerText = gapText + " | בעת פטירת הגבר, האישה תהיה בת " + womanAgeAtManDeath + " ותחיה לבדה במשך " + yearsWomanLivesAlone + " שנים.";
 
-    // נתוני השקעות ותשואות
-    var returnRate = 0.063; 
-    var nominalGrowthRate = returnRate - kizumRate; 
-    
-    // חישוב קצבאות הבסיס הנומינליות הנגזרות מהצבירה שנבחרה ומקדמי הפוליסה
-    var monthlyNominalA = totalCzviraNominalAt67 / mekademA;
-    var monthlyNominalB = totalCzviraNominalAt67 / mekademB;
-    var monthlyNominalC = totalCzviraNominalAt67 / mekademC;
+    function calculatePension() {
+        const currentSavings = parseFloat(document.getElementById('currentSavings').value);
+        let currentAge = parseInt(document.getElementById('currentAge').value);
+        const retirementAge = parseInt(document.getElementById('retirementAge').value);
+        let yearsToWork = parseInt(document.getElementById('yearsToWork').value);
+        const averageSalary = parseFloat(document.getElementById('averageSalary').value);
+        const nominalReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
+        const inflation = parseFloat(document.getElementById('inflation').value) / 100;
+        const conversionFactor = parseFloat(document.getElementById('conversionFactor').value);
 
-    document.getElementById("infoA").innerText = "קצבה ראשונית: " + Math.round(monthlyNominalA).toLocaleString() + " ₪";
-    document.getElementById("infoB").innerText = "קצבה ראשונית: " + Math.round(monthlyNominalB).toLocaleString() + " ₪";
-    document.getElementById("infoC").innerText = "קצבה ראשונית: " + Math.round(monthlyNominalC).toLocaleString() + " ₪";
+        const totalDepositRate = 0.20833; 
 
-    function getRealTotalPayout(initialMonthlyNominal, shairimPercent) {
-        var realSum = 0;
-        
-        // החישוב מתחיל מגיל הפרישה הנומינלי של הפוליסה (מיוצג כגיל 67 לצורך בניית ציר השמן)
-        var totalYearsManPays = Math.max(0, manDeathAge - 67);
-        var totalYearsWomanPaysFromMan67 = Math.max(0, womanDeathAge - (67 - ageGap));
-        
-        var maxYears = Math.max(totalYearsManPays, totalYearsWomanPaysFromMan67);
-        var maxMonths = Math.round(maxYears * 12);
-        
-        for (var m = 1; m <= maxMonths; m++) {
-            var currentYear = (m - 1) / 12;
-            
-            var isManAlive = currentYear < totalYearsManPays;
-            var isWomanAlive = currentYear < totalYearsWomanPaysFromMan67;
-            
-            var currentMonthlyNominal = initialMonthlyNominal * Math.pow(1 + nominalGrowthRate, currentYear);
-            
-            var currentPayoutNominal = 0;
-            if (isManAlive) {
-                currentPayoutNominal = currentMonthlyNominal;
-            } else if (isWomanAlive) {
-                currentPayoutNominal = currentMonthlyNominal * shairimPercent;
-            } else {
-                break; 
-            }
-            
-            // היוון ריאלי לערך נוכחי של יום הפרישה (נקודת זמן 0)
-            var currentPayoutReal = currentPayoutNominal / Math.pow(1 + infRate, currentYear);
-            
-            realSum += currentPayoutReal;
+        // מניעת מצב שגיל נוכחי גבוה מגיל פרישה נבחר
+        if (currentAge >= retirementAge) {
+            currentAge = retirementAge - 1;
+            document.getElementById('currentAge').value = currentAge;
         }
-        return realSum;
+
+        // חסם עליון לשנות עבודה: לא יותר מהזמן שנותר עד גיל קבלת הפנסיה
+        const maxYearsToRetirement = retirementAge - currentAge;
+        if (yearsToWork > maxYearsToRetirement) {
+            yearsToWork = maxYearsToRetirement;
+            document.getElementById('yearsToWork').value = yearsToWork;
+        }
+        if (yearsToWork < 0) yearsToWork = 0;
+
+        // עדכון תוויות הסליידרים
+        document.getElementById('currentSavingsVal').innerText = formatMoney(currentSavings);
+        document.getElementById('currentAgeVal').innerText = currentAge;
+        document.getElementById('retirementAgeVal').innerText = retirementAge;
+        document.getElementById('yearsToWorkVal').innerText = yearsToWork;
+        document.getElementById('averageSalaryVal').innerText = formatMoney(averageSalary);
+        document.getElementById('annualReturnVal').innerText = (nominalReturn * 100).toFixed(1) + '%';
+        document.getElementById('inflationVal').innerText = (inflation * 100).toFixed(1) + '%';
+        document.getElementById('conversionFactorVal').innerText = conversionFactor;
+
+        // חישוב מדויק של הפרש התשואה והאינפלציה (היוון ריאלי)
+        const realReturnRate = ((1 + nominalReturn) / (1 + inflation)) - 1;
+        document.getElementById('realReturnResult').innerText = (realReturnRate * 100).toFixed(2) + '%';
+
+        let totalCapital = currentSavings;
+        
+        // סימולציה שנתית מהוונת להיום
+        for (let year = 0; year < maxYearsToRetirement; year++) {
+            totalCapital *= (1 + realReturnRate);
+            
+            if (year < yearsToWork) {
+                const annualDeposit = averageSalary * totalDepositRate * 12;
+                totalCapital += annualDeposit * (1 + realReturnRate / 2);
+            }
+        }
+
+        // חישוב פלט סופי
+        const monthlyPension = totalCapital / conversionFactor;
+        const annualPension = monthlyPension * 12;
+
+        // הזרקת תוצאות למסך
+        document.getElementById('totalCapitalResult').innerText = formatMoney(totalCapital);
+        document.getElementById('monthlyPensionResult').innerText = formatMoney(monthlyPension);
+        document.getElementById('annualPensionResult').innerText = formatMoney(annualPension);
     }
 
-    var totalRealA = getRealTotalPayout(monthlyNominalA, 0.0);
-    var totalRealB = getRealTotalPayout(monthlyNominalB, 0.6);
-    var totalRealC = getRealTotalPayout(monthlyNominalC, 1.0);
+    // מאזינים לכל הסליידרים
+    const inputs = document.querySelectorAll('input[type="range"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', calculatePension);
+    });
 
-    document.getElementById("sumA").innerText = Math.round(totalRealA).toLocaleString() + " ₪";
-    document.getElementById("sumB").innerText = Math.round(totalRealB).toLocaleString() + " ₪";
-    document.getElementById("sumC").innerText = Math.round(totalRealC).toLocaleString() + " ₪";
-
-    document.getElementById("cardA").classList.remove("winner");
-    document.getElementById("cardB").classList.remove("winner");
-    document.getElementById("cardC").classList.remove("winner");
-    
-    var maxReal = Math.max(totalRealA, totalRealB, totalRealC);
-    if (maxReal === totalRealA) document.getElementById("cardA").classList.add("winner");
-    else if (maxReal === totalRealB) document.getElementById("cardB").classList.add("winner");
-    else if (maxReal === totalRealC) document.getElementById("cardC").classList.add("winner");
-}
-
-calculate();
+    calculatePension();
 </script>
 
 </body>
